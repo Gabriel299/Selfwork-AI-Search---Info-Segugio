@@ -6,9 +6,9 @@ from prompts import query_writer_instructions, summarizer_instructions, reflecti
 from tavily import TavilyClient
 
 # Inizializzazione del client OpenAI con le configurazioni
-lient = OpenAI(base_url=Config.AI_API_URL, api_key=Config.AI_API_KEY)
+client = OpenAI(base_url=Config.AI_API_URL, api_key=Config.AI_API_KEY)
 
-# Funzione per interagire con l?AI
+# Funzione per interagire con l'AI
 def llm(developer_prompt, user_prompt, temperature = 0, response_format = {"type": "json_object"}):
 
   response = client.chat.completions.create(
@@ -20,7 +20,7 @@ def llm(developer_prompt, user_prompt, temperature = 0, response_format = {"type
     temperature=temperature,
     response_format=response_format
   )
-  return response.choises[0].message.content
+  return response.choices[0].message.content
 
 # Genera una query ottimizzata per la ricerca web
 def optimize_search_query(research_topic):
@@ -42,7 +42,7 @@ def web_research(search_query):
   max_result = 1
   include_raw = False
 
-  client = TavilyClient(api_key = tavily_api_key) # inizializziamo il cliente
+  client = TavilyClient(api_key = tavily_api_key) # inizializziamo il client
   response = client.search(
                 query=search_query,
                 max_result=max_result,
@@ -53,7 +53,7 @@ def web_research(search_query):
   contents = [_format_content(result) for result in results]
 
   return {
-    "sources_gaethered": titles,
+    "sources_gathered": titles,
     "web_search_results": contents
   }
 
@@ -83,12 +83,12 @@ def reflect_on_summary(research_topic, running_summary):
     reflection_instruction.format(research_topic=research_topic),
     f" Identifica una lacuna e genera una domanda per la prossima ricerca basandoti su: {running_summary}"
   )
-  return json.load(result)
+  return json.loads(result)
 
 @cl.on_message
 async def main(message: cl.Message):
   # Fase 1: Generazione della query iniziale
-  user_message = message.contet
+  user_message = message.content
   osq = optimize_search_query(user_message)
 
   # feedback per l'utente
@@ -107,7 +107,7 @@ async def main(message: cl.Message):
     # Esegui la ricerca web
     results = web_research(query)
 
-    titles = "\n".join(results["source_gathered"])
+    titles = "\n".join(results["sources_gathered"])
 
     # feedback per l'utente
     await cl.Message(
@@ -120,7 +120,7 @@ async def main(message: cl.Message):
     running_summary = summary
     
     # feedback per l'utente
-    await cl.Message(author="system_assistant", content=f"Riasunto attuale: {summary}").send()
+    await cl.Message(author="system_assistant", content=f"Riassunto attuale: {summary}").send()
 
     # se abbiamo finito i cicli Esci
     max_cycles -= 1
@@ -141,6 +141,6 @@ async def main(message: cl.Message):
     
   # Fase 3: Invio del riassunto finale
   await cl.Message(
-          author = "segugio_assitant",
+          author = "segugio_assistant",
           content= "Risposta alla tua domanda:\n\n{message.content}\n\nRisposta finale:\n\n {running_summary}"
         ).send()

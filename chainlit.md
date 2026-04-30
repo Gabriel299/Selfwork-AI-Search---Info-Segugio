@@ -2,9 +2,9 @@
 
 **Descrizione dell'Applicativo**
 
-Aulab Segugio è un'assistente di ricerca intelligente che utilizza l'AI per condurre ricerche web approfondite e iterative. L'applicativo È progettato per eseguire ricerche complesse attraverso un processo ciclico di query, analisi e approfondimento, Utilizzando una combinazione di API di OpenAI per l'elaborazione del linguaggio naturale e Tavily per la ricerca web.
+Aulab Segugio è un'assistente di ricerca intelligente che utilizza l'AI per condurre ricerche web approfondite e iterative. L'applicativo è progettato per eseguire ricerche complesse attraverso un processo ciclico di query, analisi e approfondimento, Utilizzando una combinazione di API di OpenAI per l'elaborazione del linguaggio naturale e Tavily per la ricerca web.
 
-L'Applicativo si distingue per la sua capacità di raffinare progressivamente le ricerche attraverso cicli di apprendimento. Partendo da una domanda iniziale dell'utente , il sistema genera query ottimizzate, raccogli informazioni da fonti web, sintetizza i risultati e identifica automaticamente aree che necessitano di ulteriore approfondimento, creando un processo di ricerca dinamico e approfondito.
+L'Applicativo si distingue per la sua capacità di raffinare progressivamente le ricerche attraverso cicli di apprendimento. Partendo da una domanda iniziale dell'utente, il sistema genera query ottimizzate, raccogli informazioni da fonti web, sintetizza i risultati e identifica automaticamente aree che necessitano di ulteriore approfondimento, creando un processo di ricerca dinamico e approfondito.
 
 La forza di questo sistema risiede nella sua capacità di simulare il processo di ricerca umano, dove ogni risultato porta a nuove domande e approfondimenti. L'applicativo utilizza un'architettura modulare che separa le diverse fasi del processo di ricerca - dalla generazione delle query all'analisi dei risultati - permettendo una ricerca sintetica e approfondita su qualsiasi argomento.
 
