@@ -1,4 +1,4 @@
-import json # la libreria json prende un oggetto in formato testuale e lo converte in un oggetto python
+import json 
 import chainlit as cl
 from openai import OpenAI
 from config import Config
@@ -10,10 +10,9 @@ client = OpenAI(base_url=Config.AI_API_URL, api_key=Config.AI_API_KEY)
 
 # Funzione per interagire con l'AI
 def llm(developer_prompt, user_prompt, temperature = 0, response_format = {"type": "json_object"}):
-
   response = client.chat.completions.create(
     model = Config.LLM_MODEL_LOW,
-    message = [
+    messages = [
       {"role": "developer", "content": developer_prompt},
       {"role": "user", "content": user_prompt},
     ],
@@ -59,9 +58,9 @@ def web_research(search_query):
 
 # Sintetizza i risultati della ricerca in un riassunto coerente
 def summarize_sources(web_research_results, research_topic, running_summary=None):
-
+  
   current_results = "\n".join(web_research_results)
-
+  
   if running_summary:
     message = (
       f"Estendi questo riassunto: {running_summary}\n\n"
@@ -73,7 +72,7 @@ def summarize_sources(web_research_results, research_topic, running_summary=None
       f"Genera un riassunto di questi risultati: {current_results}"
       f"Sul tema: {research_topic}"
     )
-  
+
   output_formatter = None # Vogliamo del testo semplice
   return llm(summarizer_instructions, message, 0.2, output_formatter)
 
@@ -90,10 +89,10 @@ async def main(message: cl.Message):
   # Fase 1: Generazione della query iniziale
   user_message = message.content
   osq = optimize_search_query(user_message)
-
+  
   # feedback per l'utente
   query, aspect, reason = osq["query"], osq["aspect"], osq["reason"]
-
+  
   await cl.Message(
           author = "system_assistant", 
           content = f"Query di ricerca ottimizzata:\n {query}.\n Mi sono soffermato su questo aspetto:\n {aspect}. Per questo motivo:\n {reason}.\n"
@@ -106,19 +105,19 @@ async def main(message: cl.Message):
   while True:
     # Esegui la ricerca web
     results = web_research(query)
-
+  
     titles = "\n".join(results["sources_gathered"])
-
+  
     # feedback per l'utente
     await cl.Message(
             author = "system_assistant", 
             content = f"Fonti trovate: {titles}"
             ).send()
-    
+  
     # Genera o aggiorna il riassunto
     summary = summarize_sources(results["web_research_results"], query, running_summary)
     running_summary = summary
-    
+  
     # feedback per l'utente
     await cl.Message(author="system_assistant", content=f"Riassunto attuale: {summary}").send()
 
@@ -126,21 +125,21 @@ async def main(message: cl.Message):
     max_cycles -= 1
     if max_cycles <= 0:
       break
-
+  
     # Genera la prossima query di approfondimento
     ros = reflect_on_summary(query, summary)
-
+  
     query = ros.get("domanda_approfondimento", f"dimmi di più su {query}")
     lacuna_conoscenza = ros.get("lacuna_conoscenza", "")
-
+  
     # feedback per l'utente
     await cl.Message(
             author="system_assistant", 
             content=f"Prossima ricerca:\n {query}.\n Mi sono soffermato su questo perché:\n {lacuna_conoscenza}"
             ).send()
-    
+  
   # Fase 3: Invio del riassunto finale
   await cl.Message(
           author = "segugio_assistant",
-          content= "Risposta alla tua domanda:\n\n{message.content}\n\nRisposta finale:\n\n {running_summary}"
+          content= f"Risposta alla tua domanda:\n\n{message.content}\n\nRisposta finale:\n\n {running_summary}"
         ).send()
