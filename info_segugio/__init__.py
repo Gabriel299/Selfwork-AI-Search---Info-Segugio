@@ -115,7 +115,7 @@ async def main(message: cl.Message):
             ).send()
   
     # Genera o aggiorna il riassunto
-    summary = summarize_sources(results["web_research_results"], query, running_summary)
+    summary = summarize_sources(results["web_search_results"], query, running_summary)
     running_summary = summary
   
     # feedback per l'utente
